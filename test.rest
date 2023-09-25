@@ -1,0 +1,15 @@
+
+
+
+
+
+
+
+http://localhost:3000/api/v1/customers?
+
+###
+
+http://localhost:3000/api/v1/customers?where=username,like,er|email,like,ka
+
+###
+http://localhost:3000/api/v1/customers?where=username,like,er|id,in,39,49,56
