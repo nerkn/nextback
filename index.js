@@ -63,8 +63,9 @@ app.post('/api/signin', async (q,s)=>{
     return 'order by '+orderbys.join(', ')
   } 
   function getWhere(whereParam){
-    if(whereParam.replaceAll(/(\w|,|\,|\||\ )*/g, '')){
-      console.log("error in where", whereParam)
+    let repli =''
+    if( repli = whereParam.replaceAll(/(\w|,|\,|\||\ |-)*/g, '')) {
+      console.log("error in where", whereParam, repli)
       return false;
     }
     let  params = whereParam.split('|')
