@@ -1,6 +1,6 @@
 {
   "name": "easyback",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Creates api end point where you can crud on db prefixed db tables with a little advanced  where,order by selection",
   "main": "index.js",
   "scripts": {
