@@ -31,7 +31,7 @@ fetch('/api/v1/products', {
 Retrieve data with flexible filtering using the `where` parameter. You can specify conditions like `id,eq,97`, `name,like,ice`, or even multiple conditions like `language,in,en,tr,ua`. EasyBack also supports sorting with the `orderBy` option.
 
 ```javascript
-fetch('/api/v1/products?where=name,like,jean|category,eq,45&orderby=name')
+fetch('/api/v1/products?where=name,like,jean|category,eq,45|orderby=name&orderby=name')
 ```
 
 The return data format is always a JSON object with the structure `{ msg: 'not found', error: 1, data: e }` for error handling. If no records are found in the database, it returns an empty array (`[]`). On successful insert or update, it provides information like `{ affected: 1, insertedId: 132 }`.
