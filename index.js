@@ -168,9 +168,19 @@ function easyback(app, db, {logger=console.log, loginRequired=false, subPath='/a
     let values = []
     logger('post to ',table, q.body)
     if(q.body){
-        for(i in q.body){
-        keys.push(`${i}=?`)
-        values.push(q.body[i])
+        for (i in q.body) {
+            switch (i.toLowerCase().trim()) {
+                case 'user':
+                    if (!q.user.id)
+                        return s.json({ msg: 'unknown user', error: 1 })
+                    q.body[i] = user.id;
+                    break;
+                case 'modifiedat': //lower case
+                    q.body[i] = new Date().toISOString().replaceAll(/[T|Z]/g, ' ')
+                    break;
+            }
+            keys.push(`${i}=?`)
+            values.push(q.body[i])
         }
     }
     if(!keys.length)
