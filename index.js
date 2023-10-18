@@ -118,7 +118,7 @@ function easyback(app, db, {logger=console.log, loginRequired=false, subPath='/a
                                 break;
             default:             value = values[0]
         }
-        toQuery.push(`${field} ${op} (?)`);
+        toQuery.push(`\`${field}\` ${op} (?)`);
         toParams.push(value);
         }
         return [toQuery, toParams]
@@ -179,7 +179,7 @@ function easyback(app, db, {logger=console.log, loginRequired=false, subPath='/a
                     q.body[i] = new Date().toISOString().replaceAll(/[T|Z]/g, ' ')
                     break;
             }
-            keys.push(`${i}=?`)
+            keys.push(`\`${i}\`=?`)
             values.push(q.body[i])
         }
     }
