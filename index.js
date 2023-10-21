@@ -6,6 +6,7 @@ function easyback(
   {
     logger = console.log,
     loginRequired = false,
+    loginOnlyRequiredForUserColumnTables = true,
     subPath = "/api",
     tablePrefix = "fm_",
   }
@@ -97,13 +98,18 @@ function easyback(
     logger("loggedUsers", loggedUsers);
     q.user = loggedUsers[q.cookies.token] ?? false;
     if (!loginRequired) return n();
+    logger(
+      "loginOnlyRequiredForUserColumnTables",
+      loginOnlyRequiredForUserColumnTables
+    );
+    if (loginOnlyRequiredForUserColumnTables) return n();
     if (q.user) return n();
     return s.json({ error: 1, msg: "Login Required" });
   });
 
-  /* type=semi product, title asc 
+  /*  order by examples:
+        type=semi product, title asc 
         price>15, product desc
-
     */
   function getOrderBy(params) {
     if (params.replaceAll(/(\w|=|,|<|>|\ |%)*/g, "")) {
