@@ -1,15 +1,36 @@
 
 
+# @name Login
+POST http://localhost:3000/api/signin
+content-type: application/json
 
-
-
-
-
-http://localhost:3000/api/v1/customers?
-
-###
-
-http://localhost:3000/api/v1/customers?where=username,like,er|email,like,ka
+{
+    "email": "john.doe@example.com",
+    "password": "johndoe123"
+}
 
 ###
-http://localhost:3000/api/v1/customers?where=username,like,er|id,in,39,49,56
+
+
+http://localhost:3000/api/v1/product?
+Cookie: {{{Login.headers.Cookie}}
+###
+
+http://localhost:3000/api/v1/orders
+Cookie: {{{Login.headers.Cookie}}
+###
+
+
+# @
+http://localhost:3000/api/v1/orders?where=id,eq,111
+Cookie: {{{Login.headers.Cookie}}
+###
+http://localhost:3000/api/v1/orders?where=id,eq,112
+Cookie: {{{Login.headers.Cookie}}
+
+###
+http://localhost:3000/api/v1/orders/111
+Cookie: {{{Login.headers.Cookie}}
+###
+
+
