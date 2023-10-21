@@ -311,19 +311,17 @@ function easyback(
     if (!keys.length)
       return s.json({ msg: "notting send to delete", error: 1 });
 
-    if (keys.includes(`user=?`)) {
-      let location = keys.indexOf(`user=?`);
-      values[location] = q.user.id;
-    }
     let qe = "";
-    if (keys.includes(`id=?`) && q.body["id"] && q.body["id"] != "0") {
+    if (keys.includes("`id`=?") && q.body["id"] && q.body["id"] != "0") {
       values.push(q.body["id"]);
       response = db.query((qe = `delete  from  ${table}   where id=?`), values);
       logger("delete", response, table, qe, values, q.body);
+      response
+        .then((d) => s.json({ data: d, error: 0 }))
+        .catch((e) => s.json({ data: response, error: 1, msg: e }));
+    } else {
+      return s.json({ msg: "without id you cant delete!", error: 1 });
     }
-    response
-      .then((d) => s.json({ data: d, error: 0 }))
-      .catch((e) => s.json({ data: response, error: 1, msg: e }));
   });
   app.post(subPath + "/v1/multi/:table", async (q, s) => {
     let table = tablePrefix + q.params.table;
