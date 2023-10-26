@@ -38,7 +38,12 @@ fetch(
 );
 ```
 
-The return data format is always a JSON object with the structure `{ msg: 'not found', error: 1, data: e }` for error handling. If no records are found in the database, it returns an empty array (`[]`). On successful insert or update, it provides information like `{ affected: 1, insertedId: 132 }`.
+## Return data
+
+The return data is always a JSON object with the structure `{ msg: string, error: boolean, data: any[] }` .
+
+- If no records are found in the database, it returns an empty array (`[]`).
+- On successful insert or update, it provides information like `{ affected: 1, insertedId: 132 }`.
 
 ## Recipes
 
@@ -64,7 +69,25 @@ Simplify your backend development with EasyBack and focus on building your appli
 
 We prepared login/auth tracking but it can be shilded with your implementation on app.
 
+### Type Generation
+
+After initializing, you can call easyback.generateTypes() which returns string represatation that you can save to a file.
+
+```javascript
+
+const fs = require('fs');
+easyback(app, db,{subPath:'/api'} )
+const typeDefinitions = easyback.generateTypes();
+fs.writeFile('src/types/db.ts', typeDefinitions, (err) => {
+  if(err) {
+  throw err;
+  console.log("Types has been exported successfully.");
+});
+
+```
+
 ## Todo
 
     1) pageing
     2) example to include custom auth
+    3) seperate type generator

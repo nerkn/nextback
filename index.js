@@ -9,6 +9,7 @@ function easyback(
     loginOnlyRequiredForUserColumnTables = true,
     subPath = "/api",
     tablePrefix = "fm_",
+    divulgeTypeDefinitions = false,
   }
 ) {
   let tablesInDB = [];
@@ -54,6 +55,35 @@ function easyback(
       tableDefs.filter((td) => td?.table == prefixedTable && td?.name == column)
         .length > 0
     );
+  }
+  function generateTypes() {
+    let dbTypes = {
+      int: "number",
+      float: "number",
+      decimal: "number",
+      varchar: "string",
+      text: "string",
+      datetime: "string",
+    };
+    let results = tableDefs.reduce((result, column) => {
+      let table = column.table.replace(tablePrefix, "");
+      if (!result.hasOwnProperty(table)) result[table] = [];
+      result[table].push(
+        '"' +
+          column.name +
+          '":"' +
+          (dbTypes[column.type] ?? "string") +
+          '";' +
+          (column.comment ? "//" + column.comment : "")
+      );
+      return result;
+    }, []);
+    console.log(results);
+    results = results
+      .map((r, i) => `export type ${i} ={` + r.join("\n") + `}\n`)
+      .join("\n");
+
+    return result;
   }
   app.get("/", (q, s) => {
     s.json({ msg: "not found", error: 1 });
@@ -303,7 +333,7 @@ function easyback(
     logger("delete to ", table, q.body);
     if (q.body) {
       for (i in q.body) {
-        keys.push("`${i}`=?");
+        keys.push(`\`${i}\`=?`);
         values.push(q.body[i]);
       }
     }
@@ -397,6 +427,11 @@ function easyback(
         s.json({ msg: "super", error: 0, data: data.length ? data[0] : [] })
       )
       .catch((e) => s.json({ msg: "not found", error: 1, data: e }));
+  });
+
+  app.get(subPath + "/typeDefinitions", async (q, s, n) => {
+    if (!divulgeTypeDefinitions) return n();
+    s.text(generateTypes());
   });
 }
 exports.easyback = easyback;
