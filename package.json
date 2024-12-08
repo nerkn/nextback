@@ -1,29 +1,22 @@
 {
-  "name": "easyback",
-  "version": "1.0.6",
-  "description": "Creates api end point where you can crud on db prefixed db tables with a little advanced  where,order by selection",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/nerkn/nextback.git"
-  },
-  "keywords": [
-    "backend",
-    "crud",
-    "crud server", 
-    "api",
-    "react-admin",
-    "endpoint",
-    "sql server",
-    "type generator"
-  ],
-  "author": "nerkn",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/nerkn/nextback/issues"
-  },
-  "homepage": "https://github.com/nerkn/nextback#readme"
+    "name": "easyback_usage",
+    "version": "1.0.0",
+    "description": "Usage Example",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "npx tsx index.ts"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@types/cookie-parser": "^1.4.8",
+        "@types/express": "^5.0.0",
+        "cookie-parser": "^1.4.6",
+        "cors": "^2.8.5",
+        "dotenv": "^16.3.1",
+        "express": "^4.18.2",
+        "mariadb": "^3.2.1",
+        "tsx": "4.19.2"
+    }
 }

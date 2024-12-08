@@ -17,10 +17,17 @@ export function nextback(
   app: App,
   db: DB,
   {
+    logger,
+    loginRequired,
+    subPath,
+    tablePrefix,
+    divulgeTypeDefinitions,
+  }:
+  {
     logger: Logger,
-    loginRequired: boolean,
+    loginRequired: Boolean,
     subPath: SubPath,
-    tablePrefix = "fm_",
-    divulgeTypeDefinitions: boolean,
+    tablePrefix : String,
+    divulgeTypeDefinitions: Boolean,
   }
 );
