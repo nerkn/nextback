@@ -21,6 +21,7 @@ export async function GetTableDefinitions({ logger, tablePrefix, executeQuery })
               COLUMN_NAME AS name,
               DATA_TYPE AS type,
               COLUMN_COMMENT AS comment
+              
             FROM INFORMATION_SCHEMA.COLUMNS
             WHERE TABLE_SCHEMA = DATABASE() 
             AND TABLE_NAME LIKE '${tablePrefix}%'`,

@@ -36,7 +36,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cookieParser())
 app.use((q, r, n) => {
-  console.log('gelen', q.params)
+  console.log('gelen', q.params, q.query, q.body)
   q.db = db;
   return n();
 })

@@ -1,9 +1,10 @@
 import { Logger } from "../types";
 
-export function getOrderBy(logger:Logger, params: string): string | false {
+export function getOrderBy(logger: Logger, params: string): string | false {
+    if(!params) return ' Order By id DESC';
     if (params.replace(/(\w|=|,|<|>|\s|%)*/g, "")) {
       logger("error in orderby", params);
-      return false;
+      return '';
     }
     const orderbys = params.split(",").map((p) => {
       const sepop = p.search(/(=|<|>|%)/g);
@@ -24,5 +25,5 @@ export function getOrderBy(logger:Logger, params: string): string | false {
       return `${part1}${part2}${part3}`;
     });
 
-    return orderbys.length ? "ORDER BY " + orderbys.join(", ") : false;
+    return orderbys.length ? "ORDER BY " + orderbys.join(", ") : '';
   }

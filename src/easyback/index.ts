@@ -3,6 +3,8 @@ import { getWhere } from "./getWhere";
 import { getOrderBy } from "./getOrderBy";
 import { EasybackOptions } from "../types";
 import { GetTableDefinitions } from "./utils/GetTableDefinitions";
+import { getPagination } from "./getPagination";
+import { query } from "express";
 
 export async function Easyback(
     {
@@ -25,23 +27,30 @@ export async function Easyback(
     }
     return {
         //q.param.table,  q.params.where, q.params.orderby
-        entitiesList: (entityType: string, where: string, orderby: string) => {
+
+        getAllTables: () => ({
+            tables: tablesInDB,
+            columns: tableDefs,
+        }),
+        entitiesList: (entityType: string, where: string, orderby: string,
+            pagination: { page: number, limit: number }) => {
+            if (!tableExist(entityType))
+                return new Promise((resolve) => resolve({ msg: "table not found", error: 1 }))
             let whereParam = getWhere(logger, where);
             let orderbyParam = getOrderBy(logger, orderby);
-            if (!tableExist(entityType))
-                return new Promise((resolve) => resolve({ msg: "table not found", error: 1 })) 
-
-            return db.query(`select * from ??  ${whereParam[0]} `,
-                [entityType,
-                    ...whereParam[1],
-                ])
+            let limit = getPagination(pagination.page, pagination.limit);
+            let query = `select * from ${entityType} 
+                    ${whereParam[0].length ? `where ${whereParam[0]}` : ''}  
+                    ${orderbyParam}  
+                    ${limit}`
+            return db.query(query,whereParam[1])
                 .then((data) => ({ msg: "super", error: 0, data: data }))
                 .catch((e) => ({ msg: "not found", error: 1, data: e }));
 
         },
         entitiesAddUpdate: (entityType: string, data: Record<string, string[]>) => {
             if (!tableExist(entityType))
-                return new Promise((resolve) => resolve({ msg: "table not found", error: 1 })) 
+                return new Promise((resolve) => resolve({ msg: "table not found", error: 1 }))
 
             let keys: string[] = [];
             let values: string[] = [];
@@ -56,16 +65,41 @@ export async function Easyback(
                         case "modifiedat":
                             processes[mkey] = new Date().toISOString().replaceAll(/[T|Z]/g, " ");
                             break;
+                        case "slug":
+                            processes[mkey] = data[key].join("-").replace(/\s/g, "-")
+                                + '-' +
+                                ((1735419628865 - new Date().getTime()).toString(36))
+                            break;
                         default:
                             processes[mkey] = data[key]
                     }
                     keys.push(`\`${mkey}\`=?`);
                     values.push(processes[mkey]);
                 }
+                for (let field of tableDefs) {
+                    if (field.table != entityType)
+                        continue;
+                    let mkey = field.name
+                    switch (mkey) {
+                        case 'slug':
+                            processes[mkey] = ((1735419628865 - new Date().getTime()).toString(36));
+                            keys.push(`\`${mkey}\`=?`);
+                            values.push(processes[mkey]);
+                            break;
+                        case 'ctime':
+                        case 'createdat':
+                            processes[mkey] = new Date().toISOString().replaceAll(/[T|Z]/g, " ");
+                            keys.push(`\`${mkey}\`=?`);
+                            values.push(processes[mkey]);
+                            break;
+
+                    }
+                    console.log("key not found", field)
+                }
             }
 
-            return db.query(`insert into ?? set ?`,
-                [entityType, { ...data, ...processes }])
+            return db.query(`insert into ${entityType} set ${keys.join(", ")} `,
+                values)
                 .then((data) => ({ msg: "super", error: 0, data: data }))
                 .catch((e) => ({ msg: "not found", error: 1, data: e }));
         },
@@ -85,7 +119,7 @@ export async function Easyback(
         ) => {
             let definition = tableRelations.find((r) => r.relation === relation)
             if (!definition)
-                return new Promise((resolve) => resolve({ msg: "relation not found", error: 1 })) 
+                return new Promise((resolve) => resolve({ msg: "relation not found", error: 1 }))
 
             let select = ``;
             let datas: (string | number)[] = [];
@@ -122,7 +156,7 @@ export async function Easyback(
         relationAdd: (relation: string, entity1Id: number, entity2Id: number, extra: any) => {
             let definition = tableRelations.find((r) => r.relation === relation)
             if (!definition)
-                return new Promise((resolve) => resolve({ msg: "relation not found", error: 1 })) 
+                return new Promise((resolve) => resolve({ msg: "relation not found", error: 1 }))
 
             return db.query(`insert into relations set 
                 relation = ?, en1 = ?, en2 = ?, extra = ?`,
@@ -133,7 +167,7 @@ export async function Easyback(
         relationDelete: (relation: string, entity1Id: number, entity2Id: number) => {
             let definition = tableRelations.find((r) => r.relation === relation)
             if (!definition)
-                return new Promise((resolve) => resolve({ msg: "relation not found", error: 1 })) 
+                return new Promise((resolve) => resolve({ msg: "relation not found", error: 1 }))
 
             return db.query(`delete from relations where 
                 relation = ? and entity1Id = ? and entity2Id = ?`,

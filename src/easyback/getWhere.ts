@@ -38,8 +38,9 @@ import { Logger, ParamsType, QueryResult } from "../types";
       const andConditions = orCondition.split(/\s*&&\s*/).map((cond) => {
         const match = cond.match(/(\w+)\s*(>|<|=|like|in)\s*(.*)/i);
         if (!match) return false;
-
+        
         let [, field, operator, value] = match;
+        console.log({field, operator, value})
         operator = operator.toLowerCase();
 
         // Handle different operators and value formats
@@ -52,7 +53,7 @@ import { Logger, ParamsType, QueryResult } from "../types";
             value = value
               .replace(/[\(\)]/g, "")
               .split(",")
-              .map((v) => v.trim()).join(",");
+              .map((v) => v.trim());
             break;
           case "=":
           case ">":
@@ -63,8 +64,10 @@ import { Logger, ParamsType, QueryResult } from "../types";
             return false;
         }
 
+        console.log({ q:`\`${field}\` ${operator} (?)`, v:value })
+        
         params.push(value);
-        return `\`${field}\` ${operator} ?`;
+        return `\`${field}\` ${operator} (?)`;
       });
       return andConditions.includes(false) ? "" : andConditions.join(" AND ");
     });
